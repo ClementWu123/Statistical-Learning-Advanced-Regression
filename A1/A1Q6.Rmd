@@ -1,0 +1,175 @@
+---
+title: "A1Q6"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Undergraduate Student**
+
+
+# (a)
+
+```{r}
+x <- rnorm(100, mean = 0, sd = 1)
+
+```
+
+
+# (b)
+
+```{r}
+eps <- rnorm(100, mean = 0, sd = 0.25)
+
+```
+
+
+# (c)
+
+```{r}
+y <- -1 + 0.5*x + eps
+length(y)
+```
+
+**Comment:** The length of the vector y is 100. The value of $\beta_0$ is -1. The value of $\beta_1$ is 0.5.
+
+
+# (d)
+
+```{r}
+plot(x, y, xlab = "x", ylab = "y")
+
+```
+
+
+**Comment:** the scatter plot indicates a possible linear relationship between x and y.
+
+
+# (e)
+
+```{r}
+model1 <- lm(y~x)
+summary(model1)
+```
+
+
+**Comment:** $\hat{\beta}_0$ and $\hat{\beta}_1$ are slightly different from $\beta_0$ and $\beta_1$, but they are nearly the same. We will say that the fitted model is good estimate to the data.
+
+
+# (f)
+
+```{r}
+plot(x, y, xlab = "x", ylab = "y")
+abline(model1, col = "blue")
+legend("bottomright",c("Fitted Line"), col = "blue", lwd=3)
+```
+
+
+# (g)
+
+```{r}
+model2 <- lm(y~poly(x, 2, raw = TRUE))
+summary(model2)
+```
+
+**Comment:** From the summary, we see that the p-value of the intercept and the x term is pretty small, but the quadratic term is large. Therefore, the quadratic term is not significant and we tends to reject it. This means that there is no evidence that the model is improved.
+
+
+# (h)
+
+```{r}
+x1 <- rnorm(100, mean = 0, sd = 1)
+eps1 <- rnorm(100, mean = 0, sd = 0.15)
+y1 <- -1 + 0.5*x1 + eps1
+```
+```{r}
+plot(x1, y1, xlab = "x", ylab = "y")
+```
+```{r}
+model3 <- lm(y1~x1)
+summary(model3)
+```
+```{r}
+plot(x1, y1, xlab = "x", ylab = "y")
+abline(model3, col = "blue")
+legend("bottomright",c("Fitted Line"), col = "blue", lwd=3)
+```
+```{r}
+model4 <- lm(y1~poly(x1, 2, raw = TRUE))
+summary(model4)
+```
+
+
+**Comment:** After noise being reduced, we see a decrease in residual standard error and increase in R-squared value. This means that the model fits better than the original one, as dots are closer to the fitted line in the plot. However, the quadratic term still has a large p-value. This means that the quadratic term again is not significant. There is no evidence that the polynomial regression model improves the result.
+
+
+# (i)
+
+```{r}
+x2 <- rnorm(100, mean = 0, sd = 1)
+eps2 <- rnorm(100, mean = 0, sd = 0.35)
+y2 <- -1 + 0.5*x2 + eps2
+```
+```{r}
+plot(x2, y2, xlab = "x", ylab = "y")
+```
+```{r}
+model5 <- lm(y2~x2)
+summary(model5)
+```
+```{r}
+plot(x2, y2, xlab = "x", ylab = "y")
+abline(model5, col = "blue")
+legend("bottomright",c("Fitted Line"), col = "blue", lwd=3)
+```
+```{r}
+model6 <- lm(y2~poly(x2, 2, raw = TRUE))
+summary(model6)
+```
+
+
+**Comment:** After noise being increased, we see an increase in residual standard error and decrease in R-squared value. This means that the model fits worse than the original one, as dots are further from the fitted line in the plot. However, the quadratic term still has a large p-value. This means that the quadratic term again is not significant. There is no evidence that the polynomial regression model improves the result.
+
+
+# (j)
+
+**Original data set:**
+
+$\beta_0$:
+
+```{r}
+summary(model1)$coefficients[1,1]+c(-1,1)*summary(model1)$coefficients[1,2]*qnorm(0.975)
+```
+$\beta_1$:
+
+```{r}
+summary(model1)$coefficients[2,1]+c(-1,1)*summary(model1)$coefficients[2,2]*qnorm(0.975)
+```
+
+**Less noisy data set:**
+
+$\beta_0$:
+
+```{r}
+summary(model3)$coefficients[1,1]+c(-1,1)*summary(model3)$coefficients[1,2]*qnorm(0.975)
+```
+$\beta_1$:
+
+```{r}
+summary(model3)$coefficients[2,1]+c(-1,1)*summary(model3)$coefficients[2,2]*qnorm(0.975)
+```
+
+**Noisier data set:**
+
+$\beta_0$:
+
+```{r}
+summary(model5)$coefficients[1,1]+c(-1,1)*summary(model5)$coefficients[1,2]*qnorm(0.975)
+```
+$\beta_1$:
+
+```{r}
+summary(model5)$coefficients[2,1]+c(-1,1)*summary(model5)$coefficients[2,2]*qnorm(0.975)
+```

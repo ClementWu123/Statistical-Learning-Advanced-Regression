@@ -1,0 +1,115 @@
+---
+title: "A1Q7"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Undergraduate Student**
+
+# (a)
+
+```{r}
+auto <- read.csv('auto.csv', header = TRUE, na.strings = "?")
+auto$horsepower <- as.numeric(auto$horsepower)
+newAuto <- subset(auto[!is.na(auto$horsepower),], select  = -c(name))
+pairs(newAuto)
+```
+
+
+# (b)
+
+```{r}
+cor(newAuto)
+```
+
+
+# (c)
+
+```{r}
+model <- lm(mpg~., data = newAuto)
+summary(model)
+```
+
+### (i)
+
+**Comment:** Yes, there is a linear relationship between predictors and the response.However, there are a few predictors such as cylinders, horsepower and acceleration that are not significant, they possibly do not have a relationship with mpg. This needs a further exploration.
+
+
+### (ii)
+
+**Comment:** Displacement, weight, year and origin. They have p-value that are significantly smaller than 0.05.
+
+
+### (iii)
+
+**Comment:** There will be 0.750773 increase in mpg by increasing year by one while holding other predictors constant.
+
+
+
+# (d)
+
+```{r}
+library(MASS)
+rownames(newAuto) <- 1:392
+par(mfrow=c(2,2))
+plot(model$fitted.values, studres(model), xlab = "Fitted Values", ylab = "Stu Residuals", 
+     main="residual vs fitted value")
+abline(h=0, lty=2, col = 'red')
+
+qqnorm(studres(model), main='quantile-quantile plot')
+qqline(studres(model), col = 'red')
+
+plot(1:392, studres(model), xlab="Observation Index",ylab="Stu residuals", 
+     main="Residuals vs observation index")
+abline(h=0, lty=2, col = 'red')
+
+hat.model <- lm.influence(model)$hat
+plot(hat.model,studres(model), xlab="Levarage", ylab="Stu residuals", 
+     main = "Residual vs Leverage")
+
+cbind(newAuto, res=studres(model))[studres(model)>3 | studres(model)< -3,]
+cbind(newAuto, lev=hat.model)[hat.model>3/35,]
+```
+
+**Comment:** The Residual Plot shows that there is a nonlinear relationship between predictors and the response. There are some potential outliers, as listed above, no.243, 321, 324, 325. The qqplot shows that residuals are following normal distribution with a right tail. The leverage plot shows two points that have higher leverage than others, as listed above, no.9 and 14, but they are within the reasonable range.
+
+
+# (e)
+
+```{r}
+summary(model)$cov
+```
+
+```{r}
+summary(lm(mpg~.-acceleration-horsepower, data = newAuto))
+summary(lm(mpg~.-acceleration-cylinders, data = newAuto))
+summary(lm(mpg~.-acceleration-cylinders+displacement:horsepower, data = newAuto))
+summary(lm(mpg~.-acceleration-cylinders+displacement:horsepower+
+             displacement:year+displacement:weight, data = newAuto))
+summary(lm(mpg~.-acceleration-cylinders+displacement:horsepower+
+             displacement:weight+year:origin, data = newAuto))
+```
+
+
+**Comment:** The last model shows that displacement and horsepower, displacement and weight, year and origin interactions are statistically significant.
+
+
+# (f)
+
+```{r}
+summary(lm(mpg~log(displacement)+log(horsepower)+log(weight)+log(year)+
+             log(origin)+log(cylinders)+log(acceleration), data = newAuto))
+```
+
+
+# (g)
+
+```{r}
+summary(lm(mpg~sqrt(cylinders)+log(horsepower)+year+weight+origin+
+             I(displacement^2)+log(acceleration), data = newAuto))
+```
+
+**Comments:** transformation can reduce the p-value of those predictors which have high p-value before, making them become statistically significant. We see that after transformation, the R-squared value increases.

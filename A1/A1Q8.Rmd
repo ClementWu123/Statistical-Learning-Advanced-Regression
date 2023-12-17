@@ -1,0 +1,50 @@
+---
+title: "A1Q8"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Undergraduate Student**
+
+```{r}
+overdue <- read.csv("overdue.txt",sep = "\t")
+type <- c(rep(0, 48), rep(1,48))
+overdue$TYPE <- type
+summary(lm(LATE~BILL+TYPE, data = overdue))
+```
+
+We found that BILL predictor has a p-value greater than 0.05, this indicates that it is not significant. We should preceed to reduced models.
+
+**Reduced model:**
+
+```{r}
+summary(lm(LATE~BILL, data = overdue))
+summary(lm(LATE~TYPE, data = overdue))
+```
+
+We see that reduced models do not improve the model results. We have to check we can add some interaction terms.
+
+**Full interaction model:**
+
+```{r}
+summary(lm(LATE~BILL*TYPE, data = overdue))
+```
+
+First we tried full interaction model. p-values of all predictors including interaction term are significant. However, the p-value of the intercept indicates that this is not a appropriate model even it has a really high R-squared value.
+
+We have to try one predictors and one interaction term.
+
+**One predictor with one interaction:**
+
+```{r}
+summary(lm(LATE~BILL+BILL:TYPE, data = overdue))
+summary(lm(LATE~TYPE+BILL:TYPE, data = overdue))
+```
+
+For these two models, we can see that the second model is better than the first one because it has good R-squared value (0.8313), and all predictors including intercept have really small p-value. This means that the model can not be further optimized. 
+
+
+**Therefore, we will use LATE~TYPE+TYPE:BILL as our regression model**

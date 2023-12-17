@@ -1,0 +1,104 @@
+---
+title: "A4Q1"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Undergraudate Student
+
+```{r}
+library(MASS)
+data(mcycle)
+plot(mcycle$times,mcycle$accel)
+mcycle<- mcycle[-sample(nrow(mcycle),5),]
+library(wavethresh)
+Ywd<-wd(mcycle$accel,filter.number=1,family="DaubExPhase")
+par(mfrow=c(2,2))
+
+# soft universal
+soft <- threshold(Ywd, type="soft", policy="universal")
+softfitted <- wr(soft)
+plot(mcycle$times,mcycle$accel, xlab="times", ylab="acceleration",
+     main="scatter plot & wavelet soft universal")
+lines(mcycle$times,softfitted,lwd=3,col="blue")
+plot(mcycle$times, softfitted,xlab="times", ylab="acceleration",
+     main="Wavelet soft universal", type="l",lwd=3,col="blue")
+
+# hard universal
+hard <-threshold(Ywd,type="hard",policy="universal")
+hardfitted <- wr(hard)
+plot(mcycle$times,mcycle$accel, xlab="times", ylab="acceleration",
+     main="scatter plot & wavelet hard universal")
+lines(mcycle$times,hardfitted,lwd=3,col="blue")
+plot(mcycle$times, hardfitted,xlab="times", ylab="acceleration",
+     main="Wavelet soft universal", type="l",lwd=3,col="blue")
+
+par(mfrow=c(2,2))
+
+# soft sure
+softSure <- threshold(Ywd, type="soft", policy="sure")
+softSureFitted <- wr(softSure)
+plot(mcycle$times,mcycle$accel, xlab="times", ylab="acceleration",
+     main="scatter plot & wavelet soft sure")
+lines(mcycle$times,softSureFitted,lwd=3,col="blue")
+plot(mcycle$times, softSureFitted,xlab="times", ylab="acceleration",
+     main="Wavelet soft sure", type="l",lwd=3,col="blue")
+
+# hard threholding with sure not supported by the package anymore
+#hard sure
+# hardSure <- threshold(Ywd, type="hard", policy="sure")
+# hardSureFitted <- wr(hardSure)
+# plot(mcycle$times,mcycle$accel, xlab="times", ylab="acceleration",
+#      main="scatter plot & wavelet hard sure")
+# lines(mcycle$times,hardSureFitted,lwd=3,col="blue")
+# plot(mcycle$times, hardSureFitted,xlab="times", ylab="acceleration",
+#      main="Wavelet hard sure", type="l",lwd=3,col="blue")
+
+
+#soft cv
+par(mfrow=c(2,2))
+softcv <- threshold(Ywd, type="soft", policy="cv")
+softcvFitted <- wr(softcv)
+plot(mcycle$times,mcycle$accel, xlab="times", ylab="acceleration",
+     main="scatter plot & wavelet soft cv")
+lines(mcycle$times,softcvFitted,lwd=3,col="blue")
+plot(mcycle$times, softcvFitted,xlab="times", ylab="acceleration",
+     main="Wavelet soft cv", type="l",lwd=3,col="blue")
+
+#hard cv
+hardcv <- threshold(Ywd, type="hard", policy="cv")
+hardcvFitted <- wr(hardcv)
+plot(mcycle$times,mcycle$accel, xlab="times", ylab="acceleration",
+     main="scatter plot & wavelethard cv")
+lines(mcycle$times, hardcvFitted,lwd=3,col="blue")
+plot(mcycle$times, hardcvFitted,xlab="times", ylab="acceleration",
+     main="Wavelet hard cv", type="l",lwd=3,col="blue")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

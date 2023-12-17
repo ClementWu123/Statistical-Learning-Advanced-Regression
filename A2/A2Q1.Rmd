@@ -1,0 +1,311 @@
+---
+title: "A2Q1"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Undergraduate Student**
+
+```{r}
+library(MASS)
+```
+
+
+# (a)
+
+```{r}
+boston <- Boston
+```
+
+### (i)
+
+```{r}
+m1 <- lm(crim~zn, data = boston)
+summary(m1)
+plot(boston$zn, boston$crim, main = "crim vs zn")
+abline(m1,col = "red")
+
+m2 <- lm(crim~indus, data = boston)
+summary(m2)
+plot(boston$indus, boston$crim, main = "crim vs indus")
+abline(m2,col = "red")
+
+m3 <- lm(crim~chas, data = boston)
+summary(m3)
+plot(boston$chas, boston$crim, main = "crim vs chas")
+abline(m3,col = "red")
+
+m4 <- lm(crim~nox, data = boston)
+summary(m4)
+plot(boston$nox, boston$crim, main = "crim vs nox")
+abline(m4,col = "red")
+
+m5 <- lm(crim~rm, data = boston)
+summary(m5)
+plot(boston$rm, boston$crim, main = "crim vs rm")
+abline(m5,col = "red")
+
+m6 <- lm(crim~age, data = boston)
+summary(m6)
+plot(boston$age, boston$crim, main = "crim vs age")
+abline(m6,col = "red")
+
+m7 <- lm(crim~dis, data = boston)
+summary(m7)
+plot(boston$dis, boston$crim, main = "crim vs dis")
+abline(m7,col = "red")
+
+m8 <- lm(crim~rad, data = boston)
+summary(m8)
+plot(boston$rad, boston$crim, main = "crim vs rad")
+abline(m8,col = "red")
+
+m9 <- lm(crim~tax, data = boston)
+summary(m9)
+plot(boston$tax, boston$crim, main = "crim vs tax")
+abline(m9,col = "red")
+
+m10 <- lm(crim~ptratio, data = boston)
+summary(m10)
+plot(boston$ptratio, boston$crim, main = "crim vs ptratio")
+abline(m10,col = "red")
+
+m11 <- lm(crim~black, data = boston)
+summary(m11)
+plot(boston$black, boston$crim, main = "crim vs black")
+abline(m11,col = "red")
+
+m12 <- lm(crim~lstat, data = boston)
+summary(m12)
+plot(boston$lstat, boston$crim, main = "crim vs lstat")
+abline(m12,col = "red")
+
+m13 <- lm(crim~medv, data = boston)
+summary(m13)
+plot(boston$medv, boston$crim, main = "crim vs medv")
+abline(m13,col = "red")
+```
+
+**Comment:** From all summaries, we see that all predictors have a really small p-value except the predictor "chas", which is 0.209. Therefore, we can conclude that there is a statistically significant association between "crim" and all predictors except "chas".
+
+
+### (ii)
+
+```{r}
+multiple <- lm(crim~., data = boston)
+summary(multiple)
+```
+
+**Comments:** The multiple linear regression does not fit the data well because the residual standard error is high and R-sqaured is low. We see that zn, dis, rad, black, medv have p-vlaue below 0.05, and other predictors above 0.05. For those predictors above 0.05, we can not reject hypothesis. Therefore, we can reject the null hypothesis for zn, dis, rad, black, medv.
+
+
+###(iii)
+
+```{r}
+univeriate <- c(m1$coefficient[2], m2$coefficient[2], m3$coefficient[2],
+                m4$coefficient[2], m5$coefficient[2], m6$coefficient[2],
+                m7$coefficient[2], m8$coefficient[2], m9$coefficient[2],
+                m10$coefficient[2], m11$coefficient[2], m12$coefficient[2],
+                m13$coefficient[2])
+multi <- c(multiple$coefficients[-1])
+plot(univeriate, multi, main = "multiple linear vs univeriate linear")
+```
+
+**Comment:** There are differences between univeriate linear regression and multiple linear regression. For univeriate linear  regression, we are fitting one predictor at one time. This means that the coefficent is  the increasing of that particular predictor, with absence of other predictors. For multiple linear regression, the slope is the increase of one predictor, while holding other predictors fixed. Since two types of regression have different interpretation of slopes, there is no relationship between coeffcients from two models.
+
+
+### (iv)
+
+```{r}
+poly1 <- lm(crim~zn+I(zn^2)+I(zn^3), data = boston)
+summary(poly1)
+
+poly2 <- lm(crim~indus+I(indus^2)+I(indus^3), data = boston)
+summary(poly2)
+
+poly3 <- lm(crim~chas+I(chas^2)+I(chas^3), data = boston)
+summary(poly3)
+
+poly4 <- lm(crim~nox+I(nox^2)+I(nox^3), data = boston)
+summary(poly4)
+
+poly5 <- lm(crim~rm+I(rm^2)+I(rm^3), data = boston)
+summary(poly5)
+
+poly6 <- lm(crim~age+I(age^2)+I(age^3), data = boston)
+summary(poly6)
+
+poly7 <- lm(crim~dis+I(dis^2)+I(dis^3), data = boston)
+summary(poly7)
+
+poly8 <- lm(crim~rad+I(rad^2)+I(rad^3), data = boston)
+summary(poly8)
+
+poly9 <- lm(crim~tax+I(tax^2)+I(tax^3), data = boston)
+summary(poly9)
+
+poly10 <- lm(crim~ptratio+I(ptratio^2)+I(ptratio^3), data = boston)
+summary(poly10)
+
+poly11 <- lm(crim~black+I(black^2)+I(black^3), data = boston)
+summary(poly11)
+
+poly12 <- lm(crim~lstat+I(lstat^2)+I(lstat^3), data = boston)
+summary(poly12)
+
+poly13 <- lm(crim~medv+I(medv^2)+I(medv^3), data = boston)
+summary(poly13)
+```
+
+**Comments:** From all models, we conclude that quatratic and cubic terms of predictors zn, rm, rad, tax, black, lstat have p-value greater than 0.05. This means that those predictors are not likely to have non-linear relationship between them and the response. On the other hand, quatratic and cubic terms of predictors indus, nox, age, dis, ptratio, medv have p-value smaller than 0.05. This suggests that those predictors are likely to have non-linear relationship between them and the response.
+
+
+# (b)
+
+### (i)
+
+```{r}
+m1 <- lm(medv~crim, data = boston)
+summary(m1)
+plot(boston$crim, boston$medv, main = "medv vs crim")
+abline(m1,col = "red")
+
+m2 <- lm(medv~zn, data = boston)
+summary(m2)
+plot(boston$zn, boston$medv, main = "medv vs zn")
+abline(m2,col = "red")
+
+m3 <- lm(medv~indus, data = boston)
+summary(m3)
+plot(boston$indus, boston$medv, main = "medv vs indus")
+abline(m3,col = "red")
+
+m4 <- lm(medv~chas, data = boston)
+summary(m4)
+plot(boston$chas, boston$medv, main = "medv vs chas")
+abline(m4,col = "red")
+
+m5 <- lm(medv~nox, data = boston)
+summary(m5)
+plot(boston$nox, boston$medv, main = "medv vs nox")
+abline(m5,col = "red")
+
+m6 <- lm(medv~rm, data = boston)
+summary(m6)
+plot(boston$rm, boston$medv, main = "medv vs rm")
+abline(m6,col = "red")
+
+m7 <- lm(medv~age, data = boston)
+summary(m7)
+plot(boston$age, boston$medv, main = "medv vs age")
+abline(m7,col = "red")
+
+m8 <- lm(medv~dis, data = boston)
+summary(m8)
+plot(boston$dis, boston$medv, main = "medv vs dis")
+abline(m8,col = "red")
+
+m9 <- lm(medv~rad, data = boston)
+summary(m9)
+plot(boston$rad, boston$medv, main = "medv vs rad")
+abline(m9,col = "red")
+
+m10 <- lm(medv~tax, data = boston)
+summary(m10)
+plot(boston$tax, boston$medv, main = "medv vs tax")
+abline(m10,col = "red")
+
+m11 <- lm(medv~ptratio, data = boston)
+summary(m11)
+plot(boston$ptratio, boston$medv, main = "medv vs ptratio")
+abline(m11,col = "red")
+
+m12 <- lm(medv~black, data = boston)
+summary(m12)
+plot(boston$black, boston$medv, main = "medv vs black")
+abline(m12,col = "red")
+
+m13 <- lm(medv~lstat, data = boston)
+summary(m13)
+plot(boston$lstat, boston$medv, main = "medv vs lstat")
+abline(m13,col = "red")
+```
+
+**Comments:** From models, we see that all predictors have p-value that is smaller than 0.5. Therefore, all predictors have statistically significant association with the response.
+
+
+### (ii)
+
+```{r}
+multiple <- lm(medv~., data = boston)
+summary(multiple)
+```
+
+**Comments:** It's not the best model to fit the data as we see from the summary (R-sqaured). From the model, we see that indus and age have p-value that are greater than 0.05. Therefore, for predictors other than indus and age we reject the null hypothesis as they are all significant.
+
+
+### (iii)
+
+```{r}
+univeriate <- c(m1$coefficient[2], m2$coefficient[2], m3$coefficient[2],
+                m4$coefficient[2], m5$coefficient[2], m6$coefficient[2],
+                m7$coefficient[2], m8$coefficient[2], m9$coefficient[2],
+                m10$coefficient[2], m11$coefficient[2], m12$coefficient[2],
+                m13$coefficient[2])
+multi <- c(multiple$coefficients[-1])
+plot(univeriate, multi, main = "multiple linear vs univeriate linear")
+```
+
+**Comments:** Still we can not see a direct relationship between coefficents from two models. The reason is the same. For univeriate linear  regression, we are fitting one predictor at one time. This means that the coefficent is  the increasing of that particular predictor, with absence of other predictors. For multiple linear regression, the slope is the increase of one predictor, while holding other predictors fixed. Since two types of regression have different interpretation of slopes, there is no relationship between coeffcients from two models.
+
+
+### (iv)
+
+```{r}
+poly1 <- lm(medv~zn+I(zn^2)+I(zn^3), data = boston)
+summary(poly1)
+
+poly2 <- lm(medv~indus+I(indus^2)+I(indus^3), data = boston)
+summary(poly2)
+
+poly3 <- lm(medv~chas+I(chas^2)+I(chas^3), data = boston)
+summary(poly3)
+
+poly4 <- lm(medv~nox+I(nox^2)+I(nox^3), data = boston)
+summary(poly4)
+
+poly5 <- lm(medv~rm+I(rm^2)+I(rm^3), data = boston)
+summary(poly5)
+
+poly6 <- lm(medv~age+I(age^2)+I(age^3), data = boston)
+summary(poly6)
+
+poly7 <- lm(medv~dis+I(dis^2)+I(dis^3), data = boston)
+summary(poly7)
+
+poly8 <- lm(medv~rad+I(rad^2)+I(rad^3), data = boston)
+summary(poly8)
+
+poly9 <- lm(medv~tax+I(tax^2)+I(tax^3), data = boston)
+summary(poly9)
+
+poly10 <- lm(medv~ptratio+I(ptratio^2)+I(ptratio^3), data = boston)
+summary(poly10)
+
+poly11 <- lm(medv~black+I(black^2)+I(black^3), data = boston)
+summary(poly11)
+
+poly12 <- lm(medv~lstat+I(lstat^2)+I(lstat^3), data = boston)
+summary(poly12)
+
+poly13 <- lm(medv~crim+I(crim^2)+I(crim^3), data = boston)
+summary(poly13)
+```
+
+
+**Comments:** Quadratic or cubic terms of predictors zn, indus, dis, rad, lastat, crim, nox has p-value smaller than 0.05, this means that they are likely to have non-linear relationship between them and the response. For other predictors, they are not likely to have a non-linear relationship between them and the response.
+
+

@@ -1,0 +1,122 @@
+---
+title: "A2Q4"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Undergraduate Student**
+
+## (a)
+
+```{r}
+set.seed(1)
+e = rnorm(100)
+x = rnorm(100)
+y = x-2*x^2+e
+```
+
+**Comment:** n = 100. p = 1. The equation is: y = x - 2$x^2$+$\epsilon$
+
+
+## (b)
+
+```{r}
+plot(x, y, main = "y vs x")
+```
+
+**Comment:** The plot suggests a quadratic relationship between Y and X since we can see a clear parabolic curve.
+
+
+## (c)
+
+### (i)
+
+```{r}
+library(boot)
+set.seed(1)
+data <- data.frame(x, y)
+m1 <- glm(y~x, data = data)
+summary(m1)
+cv.glm(data = data, m1)$delta[1]
+```
+
+### (ii)
+
+```{r}
+m2 <- glm(y~poly(x, 2, raw = T), data = data)
+summary(m2)
+cv.glm(data = data, m2)$delta[1]
+```
+
+### (iii)
+
+```{r}
+m3 <- glm(y~poly(x, 3, raw = T), data = data)
+summary(m3)
+cv.glm(data = data, m3)$delta[1]
+```
+
+### (iv)
+
+```{r}
+m4 <- glm(y~poly(x, 4, raw = T), data = data)
+summary(m4)
+cv.glm(data = data, m4)$delta[1]
+```
+
+
+## (d)
+
+### (i)
+
+```{r}
+set.seed(3)
+e = rnorm(100)
+x = rnorm(100)
+y = x-2*x^2+e
+data <- data.frame(x, y)
+m1 <- glm(y~x, data = data)
+summary(m1)
+cv.glm(data = data, m1)$delta[1]
+```
+
+### (ii)
+
+```{r}
+m2 <- glm(y~poly(x, 2, raw = T), data = data)
+summary(m2)
+cv.glm(data = data, m2)$delta[1]
+```
+
+### (iii)
+
+```{r}
+m3 <- glm(y~poly(x, 3, raw = T), data = data)
+summary(m3)
+cv.glm(data = data, m3)$delta[1]
+```
+
+### (iv)
+
+```{r}
+m4 <- glm(y~poly(x, 4, raw = T), data = data)
+summary(m4)
+cv.glm(data = data, m4)$delta[1]
+```
+
+**Comments:** The MSE in (c) and (d) are different because we set different seeds. However, LOOCV errors of models iii and iv increases in both (c) and (d) comparing to i and ii.
+
+
+## (e)
+
+Since from the cubic term, the LOOCV errors begin to increase. We conclude that the second model in (c) has the smallest LOOCV error. This is expected because we can see a quadratic pattern in scatterplot. Naturally, we will prefer to use quadratic equation to fit the data.
+
+
+## (f)
+
+Yes. From model i and model ii we can see that the p-values of linear and quadratic terms are significant smaller than 0.05. This means that they are statistically significant in the model. When we looking at model iii and iv, we found that both cubic term and fourth power term have p-value greater than 0.05. There is strong evidence that the null hypothesis is prefered. Therefore, cubic term and fourth power term can be eliminated in the model. The results exactly match the conclusion in (e). 
+
+

@@ -1,0 +1,163 @@
+---
+title: "A2Q2"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Undergraduate Student**
+
+```{r}
+library(robustbase)
+data(aircraft)
+```
+
+
+## (a)
+
+```{r}
+pairs(aircraft)
+```
+
+**Comments:** From X2 column, we see there is one point that is far from other data points. This point can potentially be an outlier, same for X3 column and Y column. There is a possible collinearity between X3 and X4 because we see that data points tend to form an increasing line. Multilinearity is hard to detect from scatter plots.
+
+
+## (b)
+
+```{r}
+ols <- lm(Y~., data = aircraft)
+summary(ols)
+```
+
+**Comments:** The ordinary least square regression model has a adjusted R-squared 0.8578, which is a fairly good number. This means that the model fits data well. We see that the p-value of X2 is 0.05042, which means that X2 is not statistically significant in the model, we may get rid of it.
+
+
+## (c)
+
+```{r}
+library(MASS)
+
+res <- resid(ols)
+plot(res, main = "Residual Plot")
+abline(h=0, col='red')
+
+stdres <- rstandard(ols)
+# Point with large standarized residual
+stdres[stdres>=2 | stdres<= -2]
+plot(stdres, main = "Standarized Residual Plot")
+abline(h=0, col='red')
+
+stures <- studres(ols)
+# point with large studentized residual
+stures[stures>=3 | stures<= -3]
+plot(stures, main = "Studentized Residual Plot")
+abline(h=0, col='red')
+
+# Points with high leverage
+leverage <- hatvalues(ols)
+leverage[leverage>0.5]
+
+# Point with high cooks distance
+cooks.distance(ols)[cooks.distance(ols)>=1]
+
+plot(ols)
+```
+
+
+**Comments:** From all three residuals we see that, point 22 has really high residual, and point 12, 17 have relatively high residual. From qq plot, we see that point 17 is actually on the line, but point 12 and point 22 are away from the line. For leverage calculation, we found that point 14 and point 22 have high leverage. For cooks distance calculation, we found that point 22 have distance greater than 1. Therefore, we can conclude that point 22 is a leverage outlier with high influential. Point 14 is a leverage point but is non-influential. Point 17 and point 12 are outliers and have relatively high residual but is in reasonable range.
+
+
+## (d)
+
+### (i)
+
+```{r}
+huber <- rlm(Y~., data = aircraft, maxit=50)
+summary(huber)
+plot(huber$residuals)
+huber$residuals[huber$residuals> 20 | huber$residuals< -20]
+
+
+tukey <- rlm(Y~., psi = psi.bisquare, maxit=50, data = aircraft)
+summary(tukey)
+plot(tukey$residuals)
+tukey$residuals[tukey$residuals> 20 | tukey$residuals< -20]
+```
+
+**Comments:** Both method reduce residual standard error drastically, while tukey has lower residual standard error than huber. For huber, point 22 is an outlier and influential, and it is an influential point. For tukey, point is are outlier and influential.
+
+### (ii)
+
+```{r}
+lms <- lqs(Y~., data = aircraft, method = "lms")
+lms
+plot(lms$residuals)
+lms$residuals[lms$residuals> 20 | lms$residuals< -20]
+```
+
+**Comments:** The coefficient of X2 becomes really influential to the prediction, most of the residuals are around 0. The model Point 16, 22 are outliers. Point 16 is non-influential and point 22 is influential.
+
+
+### (iv)
+
+```{r}
+lts <- lqs(Y~., data = aircraft)
+lts
+plot(lts$residuals)
+lts$residuals[lts$residuals> 20 | lts$residuals< -20]
+```
+
+**Comments:** The coefficient of X2 is reduced comparing to lms, more absolute value of residuals are within 10. The only outlier is point 22 and it is influential.
+
+
+### (v)
+
+```{r}
+mm <- rlm(Y~., data = aircraft, method = "MM")
+summary(mm)
+plot(mm$residuals)
+mm$residuals[mm$residuals> 20 | mm$residuals< -20]
+```
+
+**Comments:** MM model combines lms and lts, the coefficient of X1 becomes dominant. we found that the residual standard error is between huber and tukey. The value of intercept is drastically reduced comparing to lms and lts. Point 22 is an outlier and influential. The residual of point 22 is lower than lms and lts.
+
+
+### (vi)
+
+```{r}
+library(quantreg)
+lad <- rq(Y~., data = aircraft, tau = 0.5)
+summary(lad)
+plot(lad$residuals)
+lad$residuals[lad$residuals> 15 | lad$residuals< -15]
+```
+
+**Comment:** We see that the coefficient of X1 still have the most influence. Nearly all absolute value of residuals are within 10. Point 22 is an outlier and it is an influential point.
+
+
+
+## (e)
+
+```{r}
+ridge <- lm.ridge(Y~., data = aircraft, lambda = seq(0, 10, 0.001))
+plot(ridge)
+select(ridge)
+ridge.fit <- lm.ridge(Y~., data = aircraft,lambda = c(0.09351538, 0.3365202, 0.067))
+ols$coefficients
+ridge.fit
+```
+
+**Comments:** We observe large fluctuation for small K, even for the smallest value of GCV. This means that the collinearity (or possibly multicollinearity) exists and has a great impact on the result of OLS. 
+
+
+
+
+
+
+
+
+
+
+

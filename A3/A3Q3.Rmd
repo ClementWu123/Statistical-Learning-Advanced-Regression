@@ -1,0 +1,101 @@
+---
+title: "A3Q3"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## (i)
+
+```{r}
+set.seed(250)
+college <- read.csv("College.csv", header = T)
+college <- college[-c(1)]
+divide <- sample(nrow(college), 0.7*nrow(college))
+train <- college[divide,]
+test <- college[-divide,]
+```
+
+
+## (ii)
+
+```{r}
+model1 <- lm(Apps~., data=train)
+pred1 <- predict(model1, test)
+pmse1 <- mean((pred1-test$Apps)^2)
+pmse1
+```
+
+
+## (iii)
+
+```{r}
+library(glmnet)
+cv1 <- cv.glmnet(data.matrix(train[-c(2)]),train$Apps, alpha=0)
+best <- cv1$lambda.min
+ridge <- glmnet(data.matrix(train[-c(2)]), train$Apps, lambda = best, alpha = 0)
+pred2 <- predict(ridge, data.matrix(test[-c(2)]))
+pmse2 <- mean((pred2-test$Apps)^2)
+pmse2
+```
+
+
+## (iv)
+
+```{r}
+cv2 <- cv.glmnet(data.matrix(train[-c(2)]),train$Apps,alpha=1)
+best1 <- cv2$lambda.min
+lasso <- glmnet(data.matrix(train[-c(2)]), train$Apps, lambda = best1, 
+                alpha = 1)
+pred3 <- predict(lasso, data.matrix(test[-c(2)]))
+pmse3 <- mean((pred3-test$Apps)^2)
+pmse3
+```
+
+## (v)
+
+```{r}
+w <- as.numeric(coef(cv1, s= cv1$lambda.min))[-1]
+cv3 <- cv.glmnet(data.matrix(train[-c(2)]),train$Apps,alpha=1, 
+                 penalty.factor = 1/w)
+best2 <- cv3$lambda.min
+adp_lasso <- glmnet(data.matrix(train[-c(2)]),train$Apps, alpha=1, 
+                    penalty.factor = 1/w, lambda = best2)
+pred4 <- predict(adp_lasso, data.matrix(test[-c(2)]))
+pmse4 <- mean((pred4-test$Apps)^2)
+pmse4
+```
+
+
+## (vi)
+
+```{r}
+library("caret")
+cont <- trainControl(method = "repeatedcv",
+                     number = 10,
+                     search = "random",
+                     verboseIter = TRUE)
+elastic <- train(Apps~.,
+                 data = train,
+                 method = "glmnet",
+                 tunelength = 20,
+                 trControl = cont)
+pred5 <- predict(elastic, test)
+pmse5 <- mean((pred5-test$Apps)^2)
+pmse5
+```
+
+
+## (vi)
+
+```{r}
+avg <- mean(test$Apps)
+tss <- mean((avg-test$Apps)^2)
+data.frame(Linear=1-pmse1/tss, Ridge=1-pmse2/tss, Lasso=1-pmse3/tss, 
+           Adaptive_Lasso=1-pmse4/tss, Elastic_net=1-pmse5/tss)
+```
+
+**Comments:** From the table of R squared, we see that all five models perform pretty well with the data, the Lasso regression performs the best with R squared 0.9331056, the OLS regression performs the worst with R squared 0.9300996. There is not much difference among the test errors resulting from these five approaches.

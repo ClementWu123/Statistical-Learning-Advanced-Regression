@@ -1,0 +1,84 @@
+---
+title: "A4Q2"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Undergraduate Student
+
+## (i)
+
+```{r}
+library(leaps)
+set.seed(6)
+college <- read.csv("College.csv", header=T)[,-c(1)]
+college$Private <- as.numeric(as.factor(college$Private))
+s <- sample(nrow(college), nrow(college)*0.7)
+train <- college[s,]
+test <- college[-s,]
+step <-regsubsets(Outstate~., data=train, method="forward", nvmax=ncol(train)-1)
+subsummary <- summary(step)
+plot(subsummary$cp,type="o",col="red",main="cp",ylab="cp")
+abline(h=min(subsummary$cp),col="blue")
+plot(subsummary$bic,type="o",col="red",main="bic",ylab="bic")
+abline(h=min(subsummary$bic),col="blue")
+plot(subsummary$adjr2,type="o",col="red",main="adjr2", ylab="adjr2")
+abline(h=max(subsummary$adjr2),col="blue")
+plot((subsummary$rss/nrow(train)),type="o",col="red",main="rmse", ,ylab="rmse")
+abline(h=min(subsummary$rss/nrow(train)),col="blue")
+
+which.min(subsummary$cp)
+which.min(subsummary$bic)
+which.max(subsummary$adjr2)
+which.min(subsummary$rss/nrow(train))
+```
+
+6 is the best minimum size we can get from four graphs. 
+
+
+```{r}
+subsummary
+```
+
+
+We get Private, Room.Board, Expend, Grad.Rate, perc.alumni, Terminal
+
+
+## (ii)
+
+```{r}
+library(gam)
+gamfit <- gam(Outstate~Private+s(Room.Board)+s(Expend)+s(Grad.Rate)+
+                s(perc.alumni)+s(Terminal),data = train)
+par(mfrow=c(2,3))
+plot(gamfit, se=T)
+```
+
+**Comments:** From graphs, we see that there might exist non-linear relationship between OutState and Room.Board, OutState and Expend.
+
+
+## (iii)
+
+```{r}
+pred <- predict(gamfit, test)
+mse <- mean((test$Outstate-pred)^2)
+tss <- mean((test$Outstate-mean(test$Outstate))^2)
+R <- 1 - mse/tss
+mse
+R
+```
+
+**Comments:** After applying the model to test data set, we get mean square error 3627254 and R squared 0.7667036. This shows that this model does not perform extremely well.
+
+
+## (iv)
+
+```{r}
+summary(gamfit)
+```
+
+**Comments:** From Anova Test for Nonparametric Effects, we see that the p-value of Expend is extremely small and Room.Board is smaller than 0.05. This means that there is a really strong evidence that Expend has a non-linear relationship with OutState, and there is an evidence that Room.Board might have non-linear relationship with OutState. This matches our conclusion in part ii.
+
